@@ -64,7 +64,7 @@ function CellRendererComponent<T>(props: Props<T>) {
     if (translate.value && !isWeb) {
       heldTanslate.value = translate.value;
     }
-    const t = activeKey ? translate.value : heldTanslate.value;
+    const t = isWeb ? translate.value : heldTanslate.value;
     return {
       transform: [horizontalAnim.value ? { translateX: t } : { translateY: t }],
     };
@@ -100,12 +100,13 @@ function CellRendererComponent<T>(props: Props<T>) {
   });
 
   const onCellLayout = useStableCallback((e?: LayoutChangeEvent) => {
-    heldTanslate.value = 0;
+   
     updateCellMeasurements();
     if (onLayout && e) onLayout(e);
   });
 
   useEffect(() => {
+    heldTanslate.value = 0;
     if (isWeb) {
       // onLayout isn't called on web when the cell index changes, so we manually re-measure
       requestAnimationFrame(() => {
@@ -166,7 +167,7 @@ function CellRendererComponent<T>(props: Props<T>) {
       style={[
         props.style,
         baseStyle,
-        activeKey ? animStyle : styles.zeroTranslate,
+        animStyle,
       ]}
       pointerEvents={activeKey ? "none" : "auto"}
     >
@@ -177,11 +178,7 @@ function CellRendererComponent<T>(props: Props<T>) {
 
 export default typedMemo(CellRendererComponent);
 
-const styles = StyleSheet.create({
-  zeroTranslate: {
-    transform: [{ translateX: 0 }, { translateY: 0 }],
-  },
-});
+
 
 declare global {
   namespace NodeJS {
